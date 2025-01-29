@@ -19,7 +19,7 @@ const LogoutButton = () => {
   return (
     <button
       onClick={handleLogout}
-      className="bg-[#2E3192] text-white p-2 w-[170px] rounded-2xl"
+      className="bg-[#2E3192] text-white p-2 w-[170px] rounded-2xl cursor-pointer"
     >
       Logout
     </button>

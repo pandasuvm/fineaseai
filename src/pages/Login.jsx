@@ -134,7 +134,7 @@ const Login = () => {
         <div className="flex-grow flex items-center justify-center">
           <div className="text-left pl-16 pr-16">
             <h2 className="text-4xl font-bold mb-8 ">
-              Welcome to <span className="text-[#2E3192]">JobSeeker</span>
+              Welcome to <span className="text-[#2E3192]">JobGrahak</span>
             </h2>
             <p className=" text-gray-400 text-left">
               Fill out your personal details to get verified and discover local

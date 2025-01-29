@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 // Lazy loading pages
 const Login = React.lazy(() => import("./pages/Login"));
-const DashboardEmployer = React.lazy(() => import("../src/Job_Giver/DashboardEmployer"));
+const DashboardEmployer = React.lazy(() => import("./flows/Job_Giver/DashboardEmployer"));
 const DashboardJobSeeker = React.lazy(() => import("./pages/DashboardJobSeeker"));
 
 const App = () => {
