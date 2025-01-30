@@ -1,8 +1,8 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth"; // Firebase Auth
-import { auth, db } from "./firebase"; // Firebase config
-import { doc, getDoc } from "firebase/firestore"; // Firestore
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "./firebase";
+import { doc, getDoc } from "firebase/firestore";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -14,6 +14,7 @@ const DashboardJobSeeker = React.lazy(() => import("./pages/DashboardJobSeeker")
 const App = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedLang, setSelectedLang] = useState("en");
 
   // Monitor user authentication state and fetch role from Firestore
   useEffect(() => {
@@ -41,6 +42,47 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
+  // Load Google Translate Script and Hide Toolbar
+  useEffect(() => {
+    const googleTranslateInit = () => {
+      if (window.google && window.google.translate) {
+        new window.google.translate.TranslateElement(
+          { pageLanguage: "en", autoDisplay: false },
+          "google_translate_element"
+        );
+      }
+    };
+
+    if (!window.google?.translate) {
+      const script = document.createElement("script");
+      script.src =
+        "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.async = true;
+      document.head.appendChild(script);
+    } else {
+      googleTranslateInit();
+    }
+
+    // Inject CSS to hide Google Translate toolbar
+    const style = document.createElement("style");
+    style.innerHTML = `
+      .goog-te-banner-frame { display: none !important; }
+      body > .skiptranslate { display: none !important; }
+      body { top: 0px !important; }
+    `;
+    document.head.appendChild(style);
+  }, []);
+
+  // Change language function
+  const changeLanguage = (lang) => {
+    setSelectedLang(lang);
+    const select = document.querySelector(".goog-te-combo");
+    if (select) {
+      select.value = lang;
+      select.dispatchEvent(new Event("change"));
+    }
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen text-lg">Loading...</div>;
   }
@@ -48,9 +90,28 @@ const App = () => {
   return (
     <Router>
       <ToastContainer />
+      <div className="p-4 flex justify-end">
+        {/* Language Selector */}
+        <select
+          value={selectedLang}
+          onChange={(e) => changeLanguage(e.target.value)}
+          className="border border-gray-300 rounded p-2"
+        >
+          <option value="en">English</option>
+          <option value="hi">Hindi (हिन्दी)</option>
+          <option value="ta">Tamil (தமிழ்)</option>
+          <option value="te">Telugu (తెలుగు)</option>
+          <option value="bn">Bengali (বাংলা)</option>
+          <option value="mr">Marathi (मराठी)</option>
+          <option value="gu">Gujarati (ગુજરાતી)</option>
+          <option value="kn">Kannada (ಕನ್ನಡ)</option>
+          <option value="ml">Malayalam (മലയാളം)</option>
+          <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+        </select>
+      </div>
+
       <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-lg">Loading...</div>}>
         <Routes>
-          {/* Login Route - Redirect Only If User is Fully Loaded & Has Role */}
           <Route
             path="/"
             element={
@@ -61,12 +122,8 @@ const App = () => {
               )
             }
           />
-
-          {/* Protected Dashboard Route */}
           <Route path="/dashboard/employer" element={<ProtectedRoute user={user} role="employer" Component={DashboardEmployer} />} />
           <Route path="/dashboard/jobseeker" element={<ProtectedRoute user={user} role="jobSeeker" Component={DashboardJobSeeker} />} />
-
-          {/* Catch-All Redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
@@ -74,10 +131,10 @@ const App = () => {
   );
 };
 
-// Protected Route Component - Prevents Unauthorized Access
+// Protected Route Component
 const ProtectedRoute = ({ user, role, Component }) => {
-  if (!user) return <Navigate to="/" replace />; // Redirect if not logged in
-  if (user.role !== role) return <Navigate to="/" replace />; // Redirect if wrong role
+  if (!user) return <Navigate to="/" replace />;
+  if (user.role !== role) return <Navigate to="/" replace />;
   return <Component user={user} />;
 };
 

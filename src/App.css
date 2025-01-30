@@ -40,3 +40,20 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Custom styles for the language dropdown */
+
+/* Hide the Google Translate banner */
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+/* Hide the Google Translate toolbar */
+body > .skiptranslate {
+  display: none !important;
+}
+
+/* Prevent layout shift */
+body {
+  top: 0px !important;
+}
