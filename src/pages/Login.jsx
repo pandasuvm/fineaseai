@@ -61,7 +61,7 @@ const Login = () => {
     try {
       let userCredential;
       let profilePhotoUrl = "";
-
+  
       if (isNewUser) {
         // Create User
         userCredential = await createUserWithEmailAndPassword(
@@ -70,14 +70,14 @@ const Login = () => {
           formData.password
         );
         const userId = userCredential.user.uid;
-
+  
         // Upload Profile Photo if Exists
         if (formData.profilePhoto) {
           const storageRef = ref(storage, `profile_photos/${userId}`);
           await uploadBytes(storageRef, formData.profilePhoto);
           profilePhotoUrl = await getDownloadURL(storageRef);
         }
-
+  
         // Save User Data in Firestore
         await setDoc(doc(db, "users", userId), {
           userId,
@@ -91,8 +91,8 @@ const Login = () => {
           profilePhoto: profilePhotoUrl,
           createdAt: new Date(),
         });
-
-        // Redirect Based on Role
+  
+        // Directly navigate to the respective dashboard after registration
         navigate(
           formData.role === "jobSeeker"
             ? "/dashboard/jobseeker"
@@ -106,11 +106,13 @@ const Login = () => {
           formData.password
         );
         const userId = userCredential.user.uid;
-
+  
         // Fetch User Role from Firestore
         const userDoc = await getDoc(doc(db, "users", userId));
         if (userDoc.exists()) {
           const userRole = userDoc.data().role;
+  
+          // Directly navigate to the respective dashboard after login
           navigate(
             userRole === "jobSeeker"
               ? "/dashboard/jobseeker"
@@ -126,6 +128,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex min-h-screen bg-[#F7F6F9] font-poppins">
