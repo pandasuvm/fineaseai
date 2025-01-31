@@ -79,12 +79,16 @@ const expenses = () => {
   };
 
   const totalExpense = expenses.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
+  
 
   return (
-    <div className="flex flex-col w-full max-w-7xl mx-auto p-6">
-      <div className="mb-8">
+    <div className="flex flex-col w-full max-w-7xl mx-auto p-6 bg-[#F7F6F9]">
+      <div className="mb-8 flex justify-between">
         <h1 className="text-3xl font-bold text-gray-800">Add Expenses</h1>
-        <p className="text-gray-600 mt-2">Track your expenses efficiently and stay on top of your finances.</p>
+        <div className="flex flex-col items-end">
+          <h3 className="text-xl font-semibold text-gray-800">Last Month's Total Expense</h3>
+          <p className="text-2xl font-bold text-indigo-600">${totalExpense}</p>
+        </div>
       </div>
 
       <div className="bg-white shadow-lg rounded-lg p-6">
@@ -164,14 +168,9 @@ const expenses = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Total Expenses */}
-      <div className="mt-6 bg-indigo-100 p-4 rounded-lg shadow-lg">
-        <h3 className="text-xl font-semibold text-gray-800">Last Month's Total Expense</h3>
-        <p className="text-2xl font-bold text-indigo-600">${totalExpense}</p>
-      </div>
     </div>
   );
+  
 };
 
 export default expenses;
