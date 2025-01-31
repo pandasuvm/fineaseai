@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
 } from "firebase/auth";
-import { auth, db, storage } from "../firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, db } from "../firebase";
+
 import { useNavigate } from "react-router-dom";
 import { Plus, X } from "lucide-react";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,10 +20,6 @@ const Login = () => {
     name: "",
     email: "",
     password: "",
-    role: "jobSeeker",
-    phone: "",
-    location: "",
-    skills: "",
     profilePhoto: null,
   });
   const [loading, setLoading] = useState(false);
@@ -34,24 +32,23 @@ const Login = () => {
   // Handle File Upload
   const handleFileChange = (e) => {
     setFormData({ ...formData, profilePhoto: e.target.files[0] });
-    // If needed, display image preview in the state
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData((prevData) => ({
           ...prevData,
-          profilePhoto: reader.result, // store image URL in the state
+          profilePhoto: reader.result,
         }));
       };
-      reader.readAsDataURL(file); // Read file as data URL for preview
+      reader.readAsDataURL(file);
     }
   };
 
   const removeImage = () => {
     setFormData((prevData) => ({
       ...prevData,
-      profilePhoto: null, // Remove the image by setting it to null
+      profilePhoto: null,
     }));
   };
 
@@ -61,7 +58,7 @@ const Login = () => {
     try {
       let userCredential;
       let profilePhotoUrl = "";
-  
+
       if (isNewUser) {
         // Create User
         userCredential = await createUserWithEmailAndPassword(
@@ -70,34 +67,24 @@ const Login = () => {
           formData.password
         );
         const userId = userCredential.user.uid;
-  
-        // Upload Profile Photo if Exists
+
+        // Upload Profile Photo if Exists (optional)
         if (formData.profilePhoto) {
-          const storageRef = ref(storage, `profile_photos/${userId}`);
-          await uploadBytes(storageRef, formData.profilePhoto);
-          profilePhotoUrl = await getDownloadURL(storageRef);
+          // Handle photo upload here (you can use Firebase Storage if required)
+          // For now, we'll skip the storage part and leave it empty
         }
-  
+
         // Save User Data in Firestore
         await setDoc(doc(db, "users", userId), {
           userId,
           name: formData.name,
           email: formData.email,
-          role: formData.role,
-          phone: formData.phone,
-          location: formData.location,
-          skills:
-            formData.role === "jobSeeker" ? formData.skills.split(",") : [],
           profilePhoto: profilePhotoUrl,
           createdAt: new Date(),
         });
-  
-        // Directly navigate to the respective dashboard after registration
-        navigate(
-          formData.role === "jobSeeker"
-            ? "/dashboard/jobseeker"
-            : "/dashboard/employer"
-        );
+
+        // Navigate to dashboard (after registration)
+        navigate("/dashboard");
       } else {
         // Sign In User
         userCredential = await signInWithEmailAndPassword(
@@ -105,22 +92,8 @@ const Login = () => {
           formData.email,
           formData.password
         );
-        const userId = userCredential.user.uid;
-  
-        // Fetch User Role from Firestore
-        const userDoc = await getDoc(doc(db, "users", userId));
-        if (userDoc.exists()) {
-          const userRole = userDoc.data().role;
-  
-          // Directly navigate to the respective dashboard after login
-          navigate(
-            userRole === "jobSeeker"
-              ? "/dashboard/jobseeker"
-              : "/dashboard/employer"
-          );
-        } else {
-          alert("User data not found.");
-        }
+        // Navigate to dashboard after login
+        navigate("/dashboard");
       }
     } catch (error) {
       alert(`Error: ${error.message}`);
@@ -128,7 +101,33 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
+
+  // Handle Google Sign-In
+  const handleGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Check if user data exists in Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        // Save user data if doesn't exist
+        await setDoc(doc(db, "users", user.uid), {
+          userId: user.uid,
+          name: user.displayName,
+          email: user.email,
+          profilePhoto: user.photoURL,
+          createdAt: new Date(),
+        });
+      }
+
+      // Navigate to dashboard after Google login
+      navigate("/dashboard");
+    } catch (error) {
+      alert(`Google Sign-In Error: ${error.message}`);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-[#F7F6F9] font-Rampart">
@@ -165,153 +164,43 @@ const Login = () => {
           {isNewUser && (
             <>
               <div className="w-full">
-                
-
-                <div className="flex gap-8 mb-4">
-                <div className="flex flex-col w-[48%] gap-2">
-                  <label className="font-semibold text-lg">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Enter your Email"
-                    className=" p-3 mb-2 border border-[#DBDBDB] rounded-[8px] focus:outline-[#DBDBDB]"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex flex-col w-[48%] gap-2">
-                  <label className="font-semibold text-lg">Password</label>
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    className="p-3 mb-2 border border-[#DBDBDB] rounded-[8px] focus:outline-[#DBDBDB]"
-                    value={formData.password}
-                    onChange={handleChange}
-                  />
-                </div>
-                </div>
-
-
-                {/* Row 1 */}
-
                 <div className="flex gap-8 mb-4">
                   <div className="flex flex-col w-[48%] gap-2">
-                    <label htmlFor="name" className="font-semibold text-lg">
-                      Full Name
-                    </label>
+                    <label className="font-semibold text-lg">Email</label>
                     <input
-                      type="text"
-                      name="name"
-                      placeholder="Full Name"
+                      type="email"
+                      name="email"
+                      placeholder="Enter your Email"
                       className=" p-3 mb-2 border border-[#DBDBDB] rounded-[8px] focus:outline-[#DBDBDB]"
-                      value={formData.name}
+                      value={formData.email}
                       onChange={handleChange}
                     />
                   </div>
-
                   <div className="flex flex-col w-[48%] gap-2">
-                    <label htmlFor="phone" className="font-semibold text-lg">
-                      Phone Number
-                    </label>
+                    <label className="font-semibold text-lg">Password</label>
                     <input
-                      type="text"
-                      name="phone"
-                      placeholder="Phone Number"
-                      className=" p-3 mb-2 border border-[#DBDBDB] rounded-[8px] focus:outline-[#DBDBDB]"
-                      value={formData.phone}
+                      type="password"
+                      name="password"
+                      placeholder="Password"
+                      className="p-3 mb-2 border border-[#DBDBDB] rounded-[8px] focus:outline-[#DBDBDB]"
+                      value={formData.password}
                       onChange={handleChange}
                     />
                   </div>
                 </div>
 
-                {/* Row 2 */}
-                <div className="flex gap-8 mb-4">
-                  <div className="flex flex-col w-[48%] gap-2">
-                    <label htmlFor="location" className="font-semibold">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      name="location"
-                      placeholder="Location"
-                      className=" p-3 mb-2 border border-[#DBDBDB] rounded-[8px] focus:outline-[#DBDBDB]"
-                      value={formData.location}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="flex flex-col w-[48%] gap-2">
-                    <label htmlFor="role" className="font-semibold text-lg">
-                      Role
-                    </label>
-                    <select
-                      name="role"
-                      className=" p-3 mb-2 border border-[#DBDBDB] rounded-[8px] focus:outline-[#DBDBDB]"
-                      value={formData.role}
-                      onChange={handleChange}
-                    >
-                      <option value="jobSeeker">Job Seeker</option>
-                      <option value="employer">Employer</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Row 3 (conditional rendering based on role) */}
-                {formData.role === "jobSeeker" && (
-                  <div className="flex gap-8 mb-4">
-                    <div className="flex flex-col w-[100%] gap-2">
-                      <label htmlFor="skills" className="font-semibold text-lg">
-                        Skills
-                      </label>
-                      <input
-                        type="text"
-                        name="skills"
-                        placeholder="Skills (comma separated)"
-                        className=" p-3 mb-2 border border-[#DBDBDB] rounded-[8px] focus:outline-[#DBDBDB]"
-                        value={formData.skills}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* File Input Row */}
                 <div className="flex flex-col w-full gap-2 mb-4">
-                  <label htmlFor="profilePhoto" className="font-semibold text-lg">
-                    Profile Photo
+                  <label htmlFor="name" className="font-semibold text-lg">
+                    Full Name
                   </label>
-
-                  <div className="flex gap-4 items-center">
-                    {/* Profile Photo Upload Square */}
-                    <div className="relative w-24 h-24 border border-gray-300 border-dashed bg-neutral-100 rounded-lg flex items-center justify-center cursor-pointer">
-                      <input
-                        type="file"
-                        id="profilePhoto"
-                        onChange={handleFileChange}
-                        className="absolute inset-0 opacity-0 cursor-pointer"
-                      />
-                      <Plus size={32} color="#2E3192" />
-                    </div>
-
-                    {/* Display Uploaded Image */}
-                    {formData.profilePhoto && (
-                      <div className="relative">
-                        <img
-                          src={formData.profilePhoto}
-                          alt="Uploaded Profile"
-                          className="w-24 h-24 object-cover rounded-lg border"
-                        />
-                        {/* Cross mark to remove the image */}
-                        <div
-                          onClick={removeImage}
-                          className="absolute -top-2 -right-2 text-red-500 bg-red-200 rounded-full p-1 cursor-pointer"
-                        >
-                          <X size={16} />
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Full Name"
+                    className=" p-3 mb-2 border border-[#DBDBDB] rounded-[8px] focus:outline-[#DBDBDB]"
+                    value={formData.name}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
             </>
@@ -344,40 +233,42 @@ const Login = () => {
                   />
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <p className="text-[#5C5C5C]">Please fill your login credentials to continue</p>
-                <hr className="mt-4 mb-4 w-[60%] text-[#EDEDED]" />
-                <div className="flex flex-col ">
-                  <p className="text-gray-700 font-medium mb-2">or continue with Google</p>
-                  <button className="flex items-center bg-white">
-                    <img src="components/Images/google.png" alt="Google Icon" className="w-8 h-8 cursor-pointer" />
-                  </button>
-                </div>
-              </div>
             </div>
           )}
 
-          <div className="flex justify-between align-bottom">
-            <div className="flex align-bottom">
-              <p className="text-center mt-3 text-md font-base text-[#3E3E3E]">
-                {isNewUser ? "Already have an account?" : "Don't have an account?"}{" "}
-                <span
-                  className="text-[#2E3192] cursor-pointer font-medium"
-                  onClick={() => setIsNewUser(!isNewUser)}
-                >
-                  {isNewUser ? "Login" : "Register"}
-                </span>
-              </p>
-            </div>
-            <div>
-              <button
-                onClick={handleAuth}
-                className="w-[170px] bg-[#2E3192] text-white p-2 rounded-2xl cursor-pointer mt-2"
-                disabled={loading}
+          {/* Google Sign In */}
+          <div className="flex flex-col gap-5 mt-4">
+            <button
+              onClick={handleGoogleSignIn}
+              className="w-full py-2 px-4 bg-white border border-[#DBDBDB] rounded-lg flex items-center justify-center gap-2"
+            >
+              <img
+                src="components/Images/google.png"
+                alt="Google Icon"
+                className="w-6 h-6"
+              />
+              Continue with Google
+            </button>
+          </div>
+
+          {/* Bottom Links */}
+          <div className="flex justify-between align-bottom mt-4">
+            <p className="text-center mt-3 text-md font-base text-[#3E3E3E]">
+              {isNewUser ? "Already have an account?" : "Don't have an account?"}{" "}
+              <span
+                className="text-[#2E3192] cursor-pointer font-medium"
+                onClick={() => setIsNewUser(!isNewUser)}
               >
-                {loading ? "Processing..." : isNewUser ? "Register" : "Login"}
-              </button>
-            </div>
+                {isNewUser ? "Login" : "Register"}
+              </span>
+            </p>
+            <button
+              onClick={handleAuth}
+              className="w-[170px] bg-[#2E3192] text-white p-2 rounded-2xl cursor-pointer mt-2"
+              disabled={loading}
+            >
+              {loading ? "Processing..." : isNewUser ? "Register" : "Login"}
+            </button>
           </div>
         </div>
       </div>
