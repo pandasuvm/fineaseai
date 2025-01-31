@@ -131,7 +131,7 @@ const Login = () => {
   
 
   return (
-    <div className="flex min-h-screen bg-[#F7F6F9] font-poppins">
+    <div className="flex min-h-screen bg-[#F7F6F9] font-Rampart">
       {/* Left Section */}
       <div className="w-2/5 bg-white flex flex-col justify-between p-0 pl-2 pr-2">
         <div className="flex-grow flex items-center justify-center">
