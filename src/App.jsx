@@ -10,6 +10,7 @@ import Expenses from './pages/Expenses'; // Expenses component
 import Support from './pages/Support'; // Support component
 import PromotionalPage from './pages/PromotionalPage'; // PromotionalPage component
 import LoginPage from './pages/Login'; // LoginPage component
+import Navbar from './components/Navbar'; // Import Navbar component
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -43,10 +44,13 @@ const App = () => {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <div className="flex">
-                <Sidebar selected={selected} setSelected={setSelected} />
-                <div className="main-content flex-grow p-4">
-                  <Dashboard />
+              <div className="flex flex-col">
+                <Navbar /> {/* Add Navbar here */}
+                <div className="flex">
+                  <Sidebar selected={selected} setSelected={setSelected} />
+                  <div className="main-content flex-grow">
+                    <Dashboard />
+                  </div>
                 </div>
               </div>
             </ProtectedRoute>
@@ -56,10 +60,13 @@ const App = () => {
           path="/loan-tracker"
           element={
             <ProtectedRoute>
-              <div className="flex">
-                <Sidebar selected={selected} setSelected={setSelected} />
-                <div className="main-content flex-grow p-4">
-                  <LoanTracker />
+              <div className="flex flex-col">
+                <Navbar />
+                <div className="flex">
+                  <Sidebar selected={selected} setSelected={setSelected} />
+                  <div className="main-content flex-grow p-4">
+                    <LoanTracker />
+                  </div>
                 </div>
               </div>
             </ProtectedRoute>
@@ -69,10 +76,13 @@ const App = () => {
           path="/ai-loan"
           element={
             <ProtectedRoute>
-              <div className="flex">
-                <Sidebar selected={selected} setSelected={setSelected} />
-                <div className="main-content flex-grow p-4">
-                  <AiLoan />
+              <div className="flex flex-col">
+                <Navbar />
+                <div className="flex">
+                  <Sidebar selected={selected} setSelected={setSelected} />
+                  <div className="main-content flex-grow p-4">
+                    <AiLoan />
+                  </div>
                 </div>
               </div>
             </ProtectedRoute>
@@ -82,10 +92,13 @@ const App = () => {
           path="/expenses"
           element={
             <ProtectedRoute>
-              <div className="flex">
-                <Sidebar selected={selected} setSelected={setSelected} />
-                <div className="main-content flex-grow p-4">
-                  <Expenses />
+              <div className="flex flex-col">
+                <Navbar />
+                <div className="flex">
+                  <Sidebar selected={selected} setSelected={setSelected} />
+                  <div className="main-content flex-grow p-4">
+                    <Expenses />
+                  </div>
                 </div>
               </div>
             </ProtectedRoute>
@@ -95,10 +108,13 @@ const App = () => {
           path="/support"
           element={
             <ProtectedRoute>
-              <div className="flex">
-                <Sidebar selected={selected} setSelected={setSelected} />
-                <div className="main-content flex-grow p-4">
-                  <Support />
+              <div className="flex flex-col">
+                <Navbar />
+                <div className="flex">
+                  <Sidebar selected={selected} setSelected={setSelected} />
+                  <div className="main-content flex-grow p-4">
+                    <Support />
+                  </div>
                 </div>
               </div>
             </ProtectedRoute>
