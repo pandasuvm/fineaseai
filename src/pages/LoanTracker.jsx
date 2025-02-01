@@ -11,7 +11,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Confirmation prompt
 import { db } from '../firebase'; // Adjust the import path based on your file structure
 
 // Import Firestore methods
-import { collection, addDoc, getDocs, query, where, deleteDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, deleteDoc, doc,setDoc } from "firebase/firestore";
 const LoanTracker = () => {
   const [loanData, setLoanData] = useState([]);
   const [loanDetails, setLoanDetails] = useState({
@@ -186,14 +186,20 @@ const LoanTracker = () => {
       <div className="max-w-3xl mx-auto bg-gray-100 p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">Add New Loan</h2>
         <div className="grid grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="Loan Name"
-            value={loanDetails.name}
-            onChange={(e) => setLoanDetails({ ...loanDetails, name: e.target.value })}
-            className="w-full p-3 bg-gray-200 text-gray-800 rounded-lg"
-          />
+        <select
+  name="name"
+  value={loanDetails.name}
+  onChange={(e) => setLoanDetails({ ...loanDetails, name: e.target.value })}
+  className="w-full p-3 bg-gray-200 text-gray-800 rounded-lg"
+>
+  <option value="" disabled>Select Loan Type</option>
+  <option value="Home Loan">Home Loan</option>
+  <option value="Vehicle Loan">Vehicle Loan</option>
+  <option value="Car Loan">Car Loan</option>
+  <option value="Marriage Loan">Marriage Loan</option>
+  <option value="Personal Loan">Personal Loan</option>
+</select>
+
           <input
             type="number"
             name="amount"
