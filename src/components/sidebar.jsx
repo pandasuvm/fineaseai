@@ -14,7 +14,7 @@ const Sidebar = ({ selected, setSelected }) => {
   }, [location.pathname, setSelected]);
 
   return (
-    <div className="sidebar w-64 bg-white text-[#5D6679] font-primary font-medium mt-4 h-full min-h-[100vh] font-custom">
+    <div className="sidebar w-64 bg-black text-[#5D6679] font-primary font-medium mt-4 h-full min-h-[100vh] font-custom">
       <ul className="list-none p-0">
         <li
           className={`flex items-center p-3 rounded-xl cursor-pointer ml-3 mr-3 mb-3 ${
