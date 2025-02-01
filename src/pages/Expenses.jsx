@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, deleteDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { confirmAlert } from "react-confirm-alert"; // Confirmation prompt library
+import "react-confirm-alert/src/react-confirm-alert.css"; // Styles for confirmation prompt
+import Stack from '@mui/material/Stack';
+import Pagination from '@mui/material/Pagination';
+import {FaTrashAlt } from 'react-icons/fa'; 
 
-const expenses = () => {
+const Expenses = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -14,9 +19,10 @@ const expenses = () => {
   });
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const expensesPerPage = 5; // Number of expenses per page
 
   useEffect(() => {
-    // Listen for authentication changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       if (!user) {
@@ -37,7 +43,7 @@ const expenses = () => {
     try {
       const q = query(collection(db, "expenses"), where("userId", "==", userId));
       const querySnapshot = await getDocs(q);
-      const fetchedExpenses = querySnapshot.docs.map((doc) => doc.data());
+      const fetchedExpenses = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setExpenses(fetchedExpenses);
     } catch (error) {
       console.error("Error fetching expenses:", error);
@@ -78,8 +84,42 @@ const expenses = () => {
     }
   };
 
+  const handleDeleteExpense = (expenseId) => {
+    confirmAlert({
+      title: 'Confirm to delete',
+      message: 'Are you sure you want to delete this expense?',
+      buttons: [
+        {
+          label: 'Yes',
+          onClick: async () => {
+            try {
+              await deleteDoc(doc(db, "expenses", expenseId));
+              fetchExpenses(user.uid); // Refresh the list after deletion
+              toast.success("Expense deleted successfully!");
+            } catch (error) {
+              console.error("Error deleting expense:", error);
+              toast.error("Error deleting expense.");
+            }
+          }
+        },
+        {
+          label: 'No',
+          onClick: () => toast.info("Expense deletion cancelled")
+        }
+      ]
+    });
+  };
+
+  // Pagination logic
+  const indexOfLastExpense = (currentPage + 1) * expensesPerPage;
+  const indexOfFirstExpense = indexOfLastExpense - expensesPerPage;
+  const currentExpenses = expenses.slice(indexOfFirstExpense, indexOfLastExpense);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value - 1);
+  };
+
   const totalExpense = expenses.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
-  
 
   return (
     <div className="flex flex-col w-full max-w-7xl mx-auto p-6 bg-[#F7F6F9]">
@@ -154,23 +194,42 @@ const expenses = () => {
               <th className="py-3 px-6 text-left text-lg font-medium text-gray-700">Expense Name</th>
               <th className="py-3 px-6 text-left text-lg font-medium text-gray-700">Date</th>
               <th className="py-3 px-6 text-left text-lg font-medium text-gray-700">Amount</th>
+              <th className="py-3 px-6 text-left text-lg font-medium text-gray-700">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {expenses.map((expense, index) => (
+            {currentExpenses.map((expense, index) => (
               <tr key={index} className="border-b">
                 <td className="py-3 px-6 text-gray-800">{index + 1}</td>
                 <td className="py-3 px-6 text-gray-800">{expense.expenditureType}</td>
                 <td className="py-3 px-6 text-gray-800">{expense.date}</td>
                 <td className="py-3 px-6 text-gray-800">${expense.amount}</td>
+                <td className="py-3 px-6 text-gray-800">
+                  <button
+                    onClick={() => handleDeleteExpense(expense.id)}
+                    className="bg-red-500 text-white p-2 rounded-full hover:bg-red-400"
+                  >
+                    <FaTrashAlt />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      <div className="mt-6 flex justify-center">
+        <Stack spacing={2}>
+          <Pagination
+            count={Math.ceil(expenses.length / expensesPerPage)}
+            variant="outlined"
+            onChange={handlePageChange}
+          />
+        </Stack>
+      </div>
     </div>
   );
-  
 };
 
-export default expenses;
+export default Expenses;

@@ -10,6 +10,8 @@ import Expenses from './pages/Expenses'; // Expenses component
 import Support from './pages/Support'; // Support component
 import PromotionalPage from './pages/PromotionalPage'; // PromotionalPage component
 import LoginPage from './pages/Login'; // LoginPage component
+import 'react-toastify/dist/ReactToastify.css';
+
 import Navbar from './components/Navbar'; // Import Navbar component
 
 const App = () => {
