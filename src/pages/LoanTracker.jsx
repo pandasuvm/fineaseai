@@ -32,15 +32,29 @@ const LoanTracker = () => {
   const fetchLoans = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "loans"));
-      const fetchedLoans = querySnapshot.docs.map(doc => ({
-        id: doc.id, 
-        ...doc.data()
-      }));
+      const fetchedLoans = querySnapshot.docs.map(doc => {
+        const loan = doc.data();
+        // Convert Firestore timestamps to JavaScript Date objects
+        return {
+          id: doc.id,
+          name: loan.name,
+          amount: loan.amount,
+          interest: loan.interest,
+          startDate: loan.startDate ? loan.startDate.toDate() : null, // Convert to Date
+          endDate: loan.endDate ? loan.endDate.toDate() : null,       // Convert to Date
+          emi: loan.emi,
+          remainingAmount: loan.remainingAmount,
+          durationInMonths: loan.durationInMonths,
+          emiPaid: loan.emiPaid,
+          paidEmis: loan.paidEmis,
+        };
+      });
       setLoanData(fetchedLoans);
     } catch (error) {
       toast.error("Error fetching loans: " + error.message);
     }
   };
+  
 
   // Function to calculate EMI and remaining amount
   const calculateLoanDetails = (amount, interest, startDate, endDate) => {

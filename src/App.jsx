@@ -11,6 +11,7 @@ import Support from './pages/Support'; // Support component
 import PromotionalPage from './pages/PromotionalPage'; // PromotionalPage component
 import LoginPage from './pages/Login'; // LoginPage component
 import 'react-toastify/dist/ReactToastify.css';
+import Notifications from './pages/Notifications';
 
 import Navbar from './components/Navbar'; // Import Navbar component
 
@@ -122,6 +123,22 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/notifications"
+  element={
+    <ProtectedRoute>
+      <div className="flex flex-col">
+        <Navbar /> {/* Navbar is now placed here */}
+        <div className="flex">
+          <Sidebar selected={selected} setSelected={setSelected} />
+          <div className="main-content flex-grow p-4">
+            <Notifications />
+          </div>
+        </div>
+      </div>
+    </ProtectedRoute>
+  }
+/>
       </Routes>
     </Router>
   );

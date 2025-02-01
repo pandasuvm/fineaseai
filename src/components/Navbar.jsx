@@ -1,10 +1,54 @@
 import React from 'react';
+import { LogOut, Bell } from 'lucide-react'; // Icons from lucide-react
+import { useNavigate } from 'react-router-dom';
+import { getAuth, signOut } from 'firebase/auth';
+import { confirmAlert } from 'react-confirm-alert'; // For confirmation dialog
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import styles for the confirmation dialog
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const auth = getAuth();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      console.log('User logged out');
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
+  };
+
+  const handleLogoutWithConfirmation = () => {
+    confirmAlert({
+      title: 'Confirm Logout',
+      message: 'Are you sure you want to logout?',
+      buttons: [
+        {
+          label: 'Yes',
+          onClick: handleLogout,
+        },
+        {
+          label: 'No',
+          onClick: () => console.log('Logout cancelled'),
+        },
+      ],
+    });
+  };
+
   return (
-    <nav className="navbar bg-white p-4 flex justify-between border border-b-2 border-gray-200 items-center shadow-lg z-10 relative">
-      <div className='font-bold text-xl'>Logo</div>
-      <div className="profile-circle bg-gray-300 rounded-full w-8 h-8"></div>
+    <nav className="navbar bg-white p-4 flex justify-between border-b-2 border-gray-200 items-center shadow-lg z-10 sticky top-0 w-full">
+      <div className="font-bold text-xl">Logo</div>
+      <div className="flex items-center gap-4">
+        <Bell 
+          className="w-6 h-6 text-gray-600 cursor-pointer hover:text-black" 
+          onClick={() => navigate('/notifications')} 
+        />
+        <LogOut 
+          className="w-6 h-6 text-gray-600 cursor-pointer hover:text-black" 
+          onClick={handleLogoutWithConfirmation} 
+        />
+      </div>
     </nav>
   );
 };
