@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Slider } from "@mui/material"; // For the sliders (Amount, Duration, ROI)
 import { format } from "date-fns"; // For formatting dates
 import Loader from "../components/LoaderPage"; // Import the Loader component
+import FloatingSalary from "../components/FloatingSalary";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -87,6 +88,7 @@ function Dashboard() {
 
   return (
     <div className="p-6 bg-[#F7F6F9] relative">
+       <FloatingSalary /> 
       {loading && <Loader />} {/* Show loader if loading is true */}
 
       {/* Top Section: Welcome Message and Remaining Balance */}
