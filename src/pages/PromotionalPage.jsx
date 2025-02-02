@@ -1,18 +1,44 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import HomeNavbar from "../components/HomeNavbar";
 
 const PromotionalPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-100 to-gray-300 text-gray-900">
+    <div className="text-gray-900">
       {/* Navbar */}
-      <nav className="flex justify-between items-center p-6 bg-white shadow-md">
-        <h1 className="text-2xl font-bold">FineEase</h1>
-        <Link to="/login">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-            Login
-          </button>
-        </Link>
-      </nav>
+      <HomeNavbar />
+
+      {/* Landing Section */}
+      <section
+        className="relative min-h-screen bg-cover bg-center bg-fixed flex items-center justify-between px-24"
+        style={{
+          backgroundImage: "url('components/Images/homebg.jpg')", // Background image for the landing section
+        }}
+      >
+        {/* Content on left */}
+        <div className="w-[57%] ml-10 pr-24 text-white">
+          <h1 className="text-black font-bold font-wide mb-4 text-6xl">
+            Welcome to Fine<span className="text-[#8C7BF3]">Ease</span>
+          </h1>
+          <p className="text-lg mb-6 text-black max-w-3xl">
+            Simplify your financial journey with the best loan and repayment solutions.
+          </p>
+          <Link to="/login">
+            <button className="px-6 py-3 bg-white text-black rounded-3xl hover:bg-gray-200 cursor-pointer transition">
+              Get Started
+            </button>
+          </Link>
+        </div>
+
+        {/* Image on the right */}
+        <div className="w-[43%]">
+          <img
+            src="components/Images/landing.png" // Replace with the actual image URL
+            alt="Promotional"
+            className="object-cover w-full h-full opacity-90 rounded-3xl pr"
+          />
+        </div>
+      </section>
 
       {/* Hero Section */}
       <header className="text-center py-20">
@@ -23,8 +49,7 @@ const PromotionalPage = () => {
       {/* Intro Section */}
       <section className="text-center px-10 py-10">
         <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
-          et ligula in dui tempor placerat.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et ligula in dui tempor placerat.
         </p>
       </section>
 
