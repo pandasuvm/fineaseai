@@ -49,7 +49,7 @@ const App = () => {
             <ProtectedRoute>
               <div className="flex flex-col">
                 <Navbar /> {/* Add Navbar here */}
-                <div className="flex">
+                <div className="flex bg-black">
                   <Sidebar selected={selected} setSelected={setSelected} />
                   <div className="main-content flex-grow">
                     <Dashboard />

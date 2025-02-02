@@ -18,7 +18,7 @@ const Sidebar = ({ selected, setSelected }) => {
       <ul className="list-none p-0">
         <li
           className={`flex items-center p-3 rounded-xl cursor-pointer ml-3 mr-3 mb-3 ${
-            selected === '/dashboard' ? 'bg-[#D5D6E9] text-[#605ED8]' : ''
+            selected === '/dashboard' ? 'bg-[#232223] text-[#5D6679]' : ''
           }`}
           onClick={() => setSelected('/dashboard')}
         >

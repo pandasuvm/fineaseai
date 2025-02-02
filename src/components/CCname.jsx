@@ -18,7 +18,7 @@ const CCname = () => {
       <p className="font-semibold mb-3 text-2xl font-wide">
         {user ? user.displayName || "User" : "Guest"}
       </p>
-      <p className="text-sm font-wider">
+      <p className="text-xs font-wider ">
         {user ? user.email || "No Email" : "Not Logged In"}
       </p>
     </div>

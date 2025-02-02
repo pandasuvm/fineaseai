@@ -14,11 +14,11 @@ const Sidebar = ({ selected, setSelected }) => {
   }, [location.pathname, setSelected]);
 
   return (
-    <div className="sidebar w-64 bg-white text-[#5D6679] font-primary font-medium mt-4 h-full min-h-[100vh] font-custom">
+    <div className="sidebar w-64 bg-black text-[#5D6679] font-primary font-medium mt-4 h-full min-h-[100vh] font-custom">
       <ul className="list-none p-0">
         <li
           className={`flex items-center p-3 rounded-xl cursor-pointer ml-3 mr-3 mb-3 ${
-            selected === '/dashboard' ? 'bg-[#D5D6E9] text-[#605ED8]' : ''
+            selected === '/dashboard' ? 'bg-[#232223] text-white' : ''
           }`}
           onClick={() => setSelected('/dashboard')}
         >
@@ -29,7 +29,7 @@ const Sidebar = ({ selected, setSelected }) => {
         </li>
         <li
           className={`flex items-center p-3 rounded-xl cursor-pointer ml-3 mr-3 mb-3 ${
-            selected === '/loan-tracker' ? 'bg-[#D5D6E9] text-[#605ED8]' : ''
+            selected === '/loan-tracker' ? 'bg-[#232223] text-white' : ''
           }`}
           onClick={() => setSelected('/loan-tracker')}
         >
@@ -40,7 +40,7 @@ const Sidebar = ({ selected, setSelected }) => {
         </li>
         <li
           className={`flex items-center p-3 rounded-xl cursor-pointer ml-3 mr-3 mb-3 ${
-            selected === '/ai-loan' ? 'bg-[#D5D6E9] text-[#605ED8]' : ''
+            selected === '/ai-loan' ? 'bg-[#232223] text-white' : ''
           }`}
           onClick={() => setSelected('/ai-loan')}
         >
@@ -51,7 +51,7 @@ const Sidebar = ({ selected, setSelected }) => {
         </li>
         <li
           className={`flex items-center p-3 rounded-xl cursor-pointer ml-3 mr-3 mb-3 ${
-            selected === '/expenses' ? 'bg-[#D5D6E9] text-[#605ED8]' : ''
+            selected === '/expenses' ? 'bg-[#232223] text-white' : ''
           }`}
           onClick={() => setSelected('/expenses')}
         >
@@ -62,7 +62,7 @@ const Sidebar = ({ selected, setSelected }) => {
         </li>
         <li
           className={`flex items-center p-3 rounded-xl cursor-pointer ml-3 mr-3 mb-3 ${
-            selected === '/support' ? 'bg-[#D5D6E9] text-[#605ED8]' : ''
+            selected === '/support' ? 'bg-[#232223] text-white' : ''
           }`}
           onClick={() => setSelected('/support')}
         >

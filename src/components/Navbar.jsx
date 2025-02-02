@@ -37,15 +37,15 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar bg-white p-4 flex justify-between border-b-2 border-gray-200 items-center shadow-lg z-10 sticky top-0 w-full">
-      <div className="font-bold text-xl">Logo</div>
+    <nav className="navbar bg-[#111111] h-full p-4 flex justify-between border-b border-gray-700 items-center shadow-lg z-10 sticky top-0 w-full">
+      <div className="font-bold text-xl text-gray-200">Logo</div>
       <div className="flex items-center gap-4">
         <Bell 
-          className="w-6 h-6 text-gray-600 cursor-pointer hover:text-black" 
+          className="w-6 h-6 text-gray-200 cursor-pointer hover:text-black" 
           onClick={() => navigate('/notifications')} 
         />
         <LogOut 
-          className="w-6 h-6 text-gray-600 cursor-pointer hover:text-black" 
+          className="w-6 h-6 text-gray-200 cursor-pointer hover:text-black" 
           onClick={handleLogoutWithConfirmation} 
         />
       </div>
