@@ -21,6 +21,7 @@ import {
 import OutstandingBalanceCard from "../components/OutstandingBalanceCard";
 import CCname from "../components/CCname";
 import LoanList from "../components/LoanList";
+import RemainingBalance from "../components/RemaniningBalance";
 const data = [
   { name: "Jan", uv: 1000 }, // Keep initial value
   { name: "Feb", uv: 1300 }, // Smooth transition between Jan and Feb
@@ -170,37 +171,7 @@ function Dashboard() {
           </div>
           <div className="flex mb-7 gap-7">
             <OutstandingBalanceCard />
-            <div className="w-[40%] bg-[#212121] rounded-lg flex flex-col justify-between pt-4">
-              <div>
-                <div className="text-center">
-                  <p className="text-xl font-medium text-[#C1C4C8] font-wide mb-8">
-                    Remaining Balance
-                  </p>
-                  <div className="text-4xl text-[#FFFFFF] font-semibold mb-2 flex-grow font-wide">
-                    <span className="text-[#8B8B8B] text-2xl mr-1">$</span>4000
-                    <span className="text-2xl text-[#8B8B8B]">.00</span>
-                  </div>
-                  {/* Center the icon and text */}
-                  <div className="flex justify-center items-center text-red-400 text-sm mb-4">
-                    <TrendingDown className="w-4 h-4 mr-2" /> {/* Icon */}
-                    <span>2.5% v last month</span> {/* Text */}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4">
-                <ResponsiveContainer width="100%" height={100}>
-                  <AreaChart data={data}>
-                    <Tooltip />
-                    <Area
-                      type="monotone"
-                      dataKey="uv"
-                      stroke="#8884d8"
-                      fill="#8C7BF3"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+<RemainingBalance />
           </div>
           <div className="emi-calculator bg-[#212121] rounded-lg p-4 w-[100%] mx-auto flex gap-8">
   {/* EMI Calculator (Left Side) */}

@@ -1,92 +1,66 @@
 import React, { useState } from "react";
-import { ArrowRight } from "lucide-react";
 import { Client } from "@gradio/client";
-import GradioComponent from "../components/GradioComponent";
-
 
 const AiLoan = () => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [recommendations, setRecommendations] = useState(null);
-  const [currentAnswer, setCurrentAnswer] = useState("");
-  const [generatedText, setGeneratedText] = useState("");
-  const [prompt, setPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [formData, setFormData] = useState({
+    loanPurpose: "", // This will now be both Loan Type and Loan Purpose
+    age: "",
+    income: "",
+    cibilScore: "",
+    experience: "",
+    loanAmt: "", // Loan amount
+    loanTenure: "", // Loan tenure
+    assets: "", // Assets valuation
+    propertyValue: "", // Only for home loan
+    vehicleCost: "", // Only for vehicle loan
+  });
 
-  const questions = [
-    "What's your annual income?",
-    "How much loan amount are you looking for?",
-    "What is the loan tenure you prefer?",
-    "What is your credit score?",
-    "Do you have any outstanding loans?",
-    "What type of loan do you need? (Personal, Home, Car, etc.)",
-    "What is your employment status?",
-    "Are you a taxpayer?",
-  ];
+  const [response, setResponse] = useState(""); // State to hold the API response
+  const [loading, setLoading] = useState(false); // Loading state for async requests
 
-  const handleAnswer = () => {
-    if (currentAnswer.trim() === "") return;
-
-    const updatedAnswers = { ...answers, [questions[currentQuestion]]: currentAnswer };
-    setAnswers(updatedAnswers);
-    setCurrentAnswer("");
-
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      setIsLoading(true);
-      generateLoanRecommendation(updatedAnswers);
-    }
+  // Handle form data changes
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const generateLoanRecommendation = async (answers) => {
-    const prompt = `Based on the following information, suggest loan options:
-      Annual Income: ${answers[questions[0]]}
-      Loan Amount: ${answers[questions[1]]}
-      Tenure: ${answers[questions[2]]}
-      Credit Score: ${answers[questions[3]]}
-      Outstanding Loans: ${answers[questions[4]]}
-      Loan Type: ${answers[questions[5]]}
-      Employment: ${answers[questions[6]]}
-      Taxpayer: ${answers[questions[7]]}`;
+  const handleSubmit = async () => {
+    // Apply conditional logic based on the selected loan purpose
+    const loanData = [
+      formData.loanPurpose, // Loan purpose
+      formData.age, // Age
+      formData.income, // Annual income
+      formData.cibilScore, // Cibil score
+      formData.experience, // Employment experience
+      formData.loanAmt, // Loan amount
+      formData.loanTenure, // Loan tenure
+      formData.assets, // Assets valuation
+      formData.loanPurpose === "home" ? formData.propertyValue : "", // Property value (for home loan)
+      formData.loanPurpose === "vehicle" ? formData.vehicleCost : "", // Vehicle cost (for vehicle loan)
+    ];
 
+    // Filter out empty strings (optional)
+    const filteredLoanData = loanData.filter((data) => data !== "");
+
+    setLoading(true);
     try {
-      const response = await fetch("https://your-gradio-url-here", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: [prompt],
-        }),
-      });
-      
-      const result = await response.json();
-      const generatedRecommendation = result.data[0];
+      // Connect to Gradio API
+      const client = await Client.connect("https://8b61258ad1f34ddfdb.gradio.live/");
 
-      setRecommendations({
-        loans: [
-          { name: "Personal Loan", percentage: 85 },
-          { name: "Home Loan", percentage: 75 },
-        ],
-        schemes: [
-          { name: "Mudra Loan", percentage: 90 },
-          { name: "PMAY", percentage: 80 },
-        ],
+      // Send the loan data array to the Gradio model
+      const result = await client.predict("/predict", {
+        prompt: filteredLoanData, // Pass the filtered loan data array to the model
       });
 
-      setGeneratedText(generatedRecommendation);
+      // Set the response in the state
+      setResponse(result.data);
     } catch (error) {
-      console.error("Error generating recommendation:", error);
+      console.error("Error:", error);
+      setResponse("There was an error with the request.");
     } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleAnswer();
+      setLoading(false);
     }
   };
 
@@ -130,60 +104,149 @@ const AiLoan = () => {
   
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 py-10">
-      <h2 className="text-4xl font-semibold mb-6">AI Loan Recommendation</h2>
-      <GradioComponent/>
+    <div>
+      <h2>Loan Application</h2>
 
-      {/* First Section: Asking Questions */}
-      {!isLoading && !recommendations ? (
-        <div className="w-full max-w-xl p-6 bg-white shadow-lg rounded-lg">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">{questions[currentQuestion]}</h3>
-            <input
-              type="text"
-              value={currentAnswer}
-              onChange={(e) => setCurrentAnswer(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Enter your answer"
-              className="py-2 px-4 border border-gray-300 rounded-lg text-xl w-full mb-6"
-            />
-            <button
-              onClick={handleAnswer}
-              className="flex justify-center items-center text-white bg-blue-500 hover:bg-blue-600 rounded-full p-2 mt-2 mx-auto"
-            >
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      ) : isLoading ? (
-        <div className="flex justify-center items-center h-48">
-          <p>Generating recommendations...</p>
-        </div>
-      ) : (
-        <div className="w-full max-w-xl p-6 bg-white shadow-lg rounded-lg">
-          <div className="text-center">
-            <h3 className="text-2xl font-semibold mb-4">AI Recommendations:</h3>
-            <div className="mb-6">
-              <h4 className="font-bold">Recommended Loans:</h4>
-              {recommendations?.loans?.map((loan, index) => (
-                <p key={index} className="text-xl">
-                  {loan.name} - {loan.percentage}% match
-                </p>
-              ))}
-            </div>
-            <div className="mb-6">
-              <h4 className="font-bold">Matching Government Schemes:</h4>
-              {recommendations?.schemes?.map((scheme, index) => (
-                <p key={index} className="text-xl">
-                  {scheme.name} - {scheme.percentage}% match
-                </p>
-              ))}
-            </div>
-            <div className="mt-6">
-              <h4 className="font-bold">AI Generated Recommendation:</h4>
-              <p className="text-lg mt-2">{generatedText}</p>
-            </div>
-          </div>
+      {/* Loan Purpose Selection */}
+      <label>
+        Loan Purpose:
+        <select
+          name="loanPurpose"
+          onChange={handleChange}
+          value={formData.loanPurpose}
+        >
+          <option value="">Select Loan Purpose</option>
+          <option value="education">Education Loan</option>
+          <option value="marriage">Marriage Loan</option>
+          <option value="personal">Personal Loan</option>
+          <option value="home">Home Loan</option>
+          <option value="vehicle">Vehicle Loan</option>
+        </select>
+      </label>
+      <br />
+
+      {/* Common Form Fields */}
+      <label>
+        Age:
+        <input
+          type="number"
+          name="age"
+          value={formData.age}
+          onChange={handleChange}
+          required
+        />
+      </label>
+      <br />
+
+      <label>
+        Annual Income:
+        <input
+          type="number"
+          name="income"
+          value={formData.income}
+          onChange={handleChange}
+          required
+        />
+      </label>
+      <br />
+
+      <label>
+        Cibil Score:
+        <input
+          type="number"
+          name="cibilScore"
+          value={formData.cibilScore}
+          onChange={handleChange}
+          required
+        />
+      </label>
+      <br />
+
+      <label>
+        Employment Experience (years):
+        <input
+          type="number"
+          name="experience"
+          value={formData.experience}
+          onChange={handleChange}
+          required
+        />
+      </label>
+      <br />
+
+      <label>
+        Loan Amount:
+        <input
+          type="number"
+          name="loanAmt"
+          value={formData.loanAmt}
+          onChange={handleChange}
+          required
+        />
+      </label>
+      <br />
+
+      <label>
+        Loan Tenure (years):
+        <input
+          type="number"
+          name="loanTenure"
+          value={formData.loanTenure}
+          onChange={handleChange}
+          required
+        />
+      </label>
+      <br />
+
+      <label>
+        Assets Valuation:
+        <input
+          type="number"
+          name="assets"
+          value={formData.assets}
+          onChange={handleChange}
+          required
+        />
+      </label>
+      <br />
+
+      {/* Conditional Input Fields based on Loan Purpose */}
+      {formData.loanPurpose === "home" && (
+        <label>
+          Property Value:
+          <input
+            type="number"
+            name="propertyValue"
+            value={formData.propertyValue}
+            onChange={handleChange}
+            required
+          />
+        </label>
+      )}
+
+      {formData.loanPurpose === "vehicle" && (
+        <label>
+          Vehicle Cost:
+          <input
+            type="number"
+            name="vehicleCost"
+            value={formData.vehicleCost}
+            onChange={handleChange}
+            required
+          />
+        </label>
+      )}
+
+      <br />
+      <button onClick={handleSubmit} disabled={loading}>
+        {loading ? "Loading..." : "Submit"}
+      </button>
+
+      {/* Display the Response from the Model */}
+      {response && (
+        <div style={{ marginTop: "20px" }}>
+          <h3>Response from Model:</h3>
+          <p>{response}</p>
         </div>
       )}
 
