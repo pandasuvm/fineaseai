@@ -1,25 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase'; // Firebase configuration and initialization
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { auth } from '../firebase'; // Firebase Authentication
 import { ToastContainer, toast } from 'react-toastify'; // Notification library
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { FaTimesCircle } from 'react-icons/fa'; // Import FaTimesCircle icon from react-icons
- // Icons for notifications
 
 const Notifications = () => {
+  const [userId, setUserId] = useState(null); // To store the logged-in user's ID
   const [loanData, setLoanData] = useState([]);
   const [upcomingPayments, setUpcomingPayments] = useState([]);
   const [passedEmis, setPassedEmis] = useState([]);
   const [otherNotifications, setOtherNotifications] = useState([]);
 
   useEffect(() => {
-    // Fetch the loan data when the component is mounted
-    fetchLoans();
+    // Get the logged-in user's ID from Firebase Authentication
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      setUserId(currentUser.uid); // Set the user ID
+    }
   }, []);
 
+  useEffect(() => {
+    // Fetch the loan data when the component is mounted or userId changes
+    if (userId) {
+      fetchLoans();
+    }
+  }, [userId]);
+
   const fetchLoans = async () => {
+    if (!userId) return; // Return early if no user ID
+
     try {
-      const querySnapshot = await getDocs(collection(db, "loans"));
+      const loansRef = collection(db, "loans");
+      const q = query(loansRef, where("userId", "==", userId)); // Filter loans by userId
+      const querySnapshot = await getDocs(q);
       const loans = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -34,17 +49,19 @@ const Notifications = () => {
 
   const categorizeNotifications = (loans) => {
     const currentDate = new Date();
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1); // First day of the current month
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0); // Last day of the current month
+
     const upcoming = [];
     const passed = [];
     const others = [];
 
     loans.forEach((loan) => {
       const startDate = new Date(loan.startDate.seconds * 1000); // Convert Firestore timestamp to JavaScript Date
-      const endDate = new Date(loan.endDate.seconds * 1000); // Convert Firestore timestamp to JavaScript Date
       const nextEmiDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDate()); // Assuming EMI is due next month
 
-      // Check if the loan has upcoming payment in the next 30 days
-      if (nextEmiDate > currentDate && nextEmiDate <= new Date(currentDate.setMonth(currentDate.getMonth() + 1))) {
+      // Check if the EMI due date is within the current month (from today till the end of the month)
+      if (nextEmiDate >= currentDate && nextEmiDate <= endOfMonth) {
         upcoming.push({
           ...loan,
           notification: `Upcoming EMI for loan ${loan.name} due on ${nextEmiDate.toLocaleDateString()}`,
