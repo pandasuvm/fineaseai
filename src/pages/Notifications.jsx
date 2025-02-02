@@ -91,13 +91,13 @@ const Notifications = () => {
   };
 
   return (
-    <div className="p-6 bg-white">
+    <div className="p-6 bg-black">
       <ToastContainer position="top-right" autoClose={5000} />
-      <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Loan Notifications</h1>
+      <h1 className="text-4xl font-bold text-center text-gray-400 mb-6">Loan Notifications</h1>
 
       {/* Upcoming Payments Section */}
       <div>
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Upcoming Payments</h2>
+        <h2 className="text-2xl font-semibold text-gray-400 mb-4">Upcoming Payments</h2>
         <div>
           {upcomingPayments.length > 0 ? (
             upcomingPayments.map((notification, index) => (
@@ -114,7 +114,7 @@ const Notifications = () => {
 
       {/* Passed EMIs Section */}
       <div className="mt-8">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Passed EMIs</h2>
+        <h2 className="text-2xl font-semibold text-gray-400 mb-4">Passed EMIs</h2>
         <div>
           {passedEmis.length > 0 ? (
             passedEmis.map((notification, index) => (
@@ -131,7 +131,7 @@ const Notifications = () => {
 
       {/* Other Notifications Section */}
       <div className="mt-8">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Other Notifications</h2>
+        <h2 className="text-2xl font-semibold text-gray-400 mb-4">Other Notifications</h2>
         <div>
           {otherNotifications.length > 0 ? (
             otherNotifications.map((notification, index) => (

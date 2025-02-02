@@ -56,22 +56,80 @@ const AiLoan = () => {
     const { scheme, explanation, loan_details } = data[0];
 
     return (
-      <div style={{ marginTop: "20px" }}>
-        <h3>Response from Model:</h3>
-        <div>
-          <p><strong>Loan Scheme:</strong> {scheme}</p>
-          <p><strong>Explanation:</strong> {explanation}</p>
-          <h4>Loan Details:</h4>
-          <div>
-            <p><strong>Loan Amount:</strong> ₹{loan_details.loan_amount}</p>
-            <p><strong>Loan Tenure:</strong> {loan_details.loan_tenure} years</p>
-            <p><strong>Interest Rate:</strong> {loan_details.interest_rate}</p>
-            <p><strong>EMI:</strong> ₹{loan_details.emi}</p>
-            <p><strong>Total Interest:</strong> ₹{loan_details.total_interest}</p>
-            <p><strong>Total Amount:</strong> ₹{loan_details.total_amount}</p>
-          </div>
-        </div>
-      </div>
+<div>
+  <h3 className="text-2xl font-semibold text-gray-400 mt-10 font-wide">AI Loan Recommendation:</h3>
+  <div className="flex space-x-6 max-w-6xl mx-auto mt-8 ">
+    {/* Left Card */}
+    <div
+  className="w-[60%] border-2 border-gray-800 p-6 backdrop-blur-lg rounded-lg shadow-lg bg-cover bg-center transition duration-300 ease-in-out hover:bg-black/50"
+  style={{
+    backgroundImage: `url('components/Images/cardbg2.jpg')`, // Replace with your image URL
+    backgroundSize: 'cover', // Ensures the image covers the entire background
+    backgroundPosition: 'center', // Centers the image in the div
+  }}
+>
+<h4 className="text-xl mt-4 text-gray-300 mb-5 font-wide">AI Suggested loan:</h4>
+  <div className="text-white">
+    <div className='mb-5'>
+    <span className="text-gray-300 font-light text-xl mr-4">Loan Scheme:</span> 
+    <span className='text-gray-300 font-semibold font-wide text-2xl'>{scheme}</span>
+    </div>
+    <div>
+    <span className="text-gray-300 font-light text-md mr-4 font-wide mb-4">Why it was suggested:</span>  
+    <p className='font-wide font-medium text-gray-400'>{explanation}</p>
+    </div>
+  </div>
+</div>
+
+
+    {/* Right Card with Background Image */}
+    <div
+      className="w-[40%] p-6 backdrop-blur-lg rounded-lg shadow-lg border-2 border-gray-800 font-wide"
+      style={{
+        backgroundImage: `url('components/Images/cardbg.jpg')`, // Replace this with your image URL
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <h4 className="text-xl mt-4 text-gray-300 mb-5">Details of the Loan:</h4>
+      <div className="text-black">
+  <div className="flex justify-between text-lg font-semibold text-gray-200">
+    <span className="text-gray-300 font-light text-sm">Loan Amount:</span>
+    <span>₹{loan_details.loan_amount}</span>
+  </div>
+
+  <div className="flex justify-between text-lg font-semibold text-gray-200">
+    <span className="text-gray-300 font-light text-sm">Loan Tenure:</span>
+    <span>{loan_details.loan_tenure} years</span>
+  </div>
+
+  <div className="flex justify-between text-lg font-semibold text-gray-200">
+    <span className="text-gray-300 font-light text-sm">Interest Rate:</span>
+    <span>{loan_details.interest_rate}</span>
+  </div>
+
+  <div className="flex justify-between text-lg font-semibold text-gray-200">
+    <span className="text-gray-300 font-light text-sm">EMI:</span>
+    <span>₹{loan_details.emi}</span>
+  </div>
+
+  <div className="flex justify-between text-lg font-semibold text-gray-200">
+    <span className="text-gray-300 font-light text-sm">Total Interest:</span>
+    <span>₹{loan_details.total_interest}</span>
+  </div>
+
+  <div className="flex justify-between text-lg font-semibold text-gray-200">
+    <span className="text-gray-300 font-light text-sm">Total Amount:</span>
+    <span>₹{loan_details.total_amount}</span>
+  </div>
+</div>
+
+    </div>
+  </div>
+</div>
+
+    
+
     );
   };
 
@@ -225,7 +283,7 @@ const AiLoan = () => {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="px-6 py-3 mt-6 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition"
+            className="px-6 py-3 mt-6 bg-[#8C7BF3] rounded-3xl w-[200px] text-white hover:bg-[#7162c5] cursor-pointer transition"
           >
             {loading ? "Loading..." : "Submit"}
           </button>
