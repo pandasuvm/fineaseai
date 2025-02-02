@@ -18,7 +18,7 @@ const PromotionalPage = () => {
         {/* Content on left */}
         <div className="w-[57%] ml-10 pr-24 text-white">
           <h1 className="text-black font-bold font-wide mb-4 text-6xl">
-            Welcome to Fine<span className="text-[#8C7BF3]">Ease</span>
+            Welcome to Fin<span className="text-[#8C7BF3]">Ease</span>
           </h1>
           <p className="text-lg mb-6 text-black max-w-3xl">
             Simplify your financial journey with the best loan and repayment solutions.
@@ -41,17 +41,20 @@ const PromotionalPage = () => {
       </section>
 
       {/* Hero Section */}
-      <header className="text-center py-20">
-        <h1 className="text-6xl font-bold text-gray-600 animate-pulse">FineEase</h1>
-        <p className="text-2xl text-gray-500 mt-4">Finance Made Easy</p>
-      </header>
+      <section className="text-center px-10 py-10 flex items-center">
+  <div className="flex-1">
+    <img src="components/Images/about.png" alt="Description" className="w-full h-auto rounded-lg shadow-lg" />
+  </div>
 
-      {/* Intro Section */}
-      <section className="text-center px-10 py-10">
-        <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et ligula in dui tempor placerat.
-        </p>
-      </section>
+  {/* Right Section */}
+  <div className="flex-1 pl-10 text-left">
+    <h2 className="text-3xl font-semibold text-gray-800 mb-4 font-wide">Our AI Loan Recommender</h2>
+    <p className="text-lg text-gray-700 max-w-2xl w-[320px] text-left">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et ligula in dui tempor placerat.
+    </p>
+  </div>
+</section>
+
 
       {/* Images Section */}
       {/* <section className="grid grid-cols-1 md:grid-cols-3 gap-6 px-10 py-10">

@@ -221,7 +221,7 @@ const LoanTracker = () => {
 
   {/* Loan Type Selection - Tags */}
   <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mb-4">
-  {["Home", "Vehicle", "Car", "Marriage", "Personal"].map((loanType) => (
+  {["Home Loan", "Vehicle Loan", "Car Loan", "Marriage Loan", "Personal Loan"].map((loanType) => (
     <button
       key={loanType}
       onClick={() => setLoanDetails({ ...loanDetails, name: loanType })}
