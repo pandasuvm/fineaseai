@@ -38,28 +38,7 @@ const data = [
   // { name: 'Dec', uv: 1490 },
 ];
 
-const loanData = [
-  {
-    type: 'home',
-    amount: 1200,
-    date: '12-01-2024',
-  },
-  {
-    type: 'vehicle',
-    amount: 9500,
-    date: '12-01-2024',
-  },
-  {
-    type: 'personal',
-    amount: 5000,
-    date: '15-02-2024',
-  },
-  {
-    type: 'marriage',
-    amount: 7000,
-    date: '20-03-2024',
-  },
-];
+
 
 // Function to map loan type to respective icon
 const getLoanIcon = (type) => {
@@ -169,7 +148,7 @@ function Dashboard() {
             </h1>
             {/* <p className="text-gray-600 mt-2">AI LOAN RECOMMENDER</p> */}
           </div>
-          <div className="flex mb-7 gap-7">
+          <div className="flex mb-7 gap-8">
             <OutstandingBalanceCard />
 <RemainingBalance />
           </div>

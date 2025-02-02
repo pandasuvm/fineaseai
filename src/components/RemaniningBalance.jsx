@@ -90,7 +90,7 @@ const RemainingBalance = () => {
     };
   
   return (
-    <div className="w-[40%] bg-[#212121] rounded-lg flex flex-col justify-between pt-4">
+    <div className="w-[45%] bg-[#212121] rounded-lg flex flex-col justify-between pt-4">
       <div>
         <div className="text-center">
           <p className="text-xl font-medium text-[#C1C4C8] font-wide mb-8">

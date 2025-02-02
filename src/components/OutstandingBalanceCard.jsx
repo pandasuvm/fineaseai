@@ -63,7 +63,7 @@ const OutstandingBalanceCard = () => {
   };
 
   return (
-    <div className="large-card bg-[#212121] rounded-lg p-4 min-h-[30vh] flex flex-col justify-between shadow-md">
+    <div className="large-card bg-[#212121] rounded-lg p-4 min-h-[30vh] flex flex-col justify-between shadow-md w-[55%]">
       {/* Header and Dropdown */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-medium text-[#C1C4C8]">Outstanding Balance</h2>
