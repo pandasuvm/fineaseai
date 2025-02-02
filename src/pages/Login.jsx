@@ -21,6 +21,7 @@ const Login = () => {
     email: "",
     password: "",
     profilePhoto: null,
+    monthlySalary: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -80,6 +81,7 @@ const Login = () => {
           name: formData.name,
           email: formData.email,
           profilePhoto: profilePhotoUrl,
+          monthlySalary: formData.monthlySalary,
           createdAt: new Date(),
         });
 
@@ -136,11 +138,10 @@ const Login = () => {
         <div className="flex-grow flex items-center justify-center">
           <div className="text-left pl-16 pr-16">
             <h2 className="text-4xl font-bold mb-8 ">
-              Welcome to <span className="text-[#2E3192]">JobGrahak</span>
+              Welcome to <span className="text-[#2E3192]">FineEase</span>
             </h2>
             <p className=" text-gray-400 text-left">
-              Fill out your personal details to get verified and discover local
-              job opportunities and build a stronger community.
+              Fill out your personal details to get verified and manage all your loans at one place
             </p>
           </div>
         </div>
@@ -202,6 +203,19 @@ const Login = () => {
                     onChange={handleChange}
                   />
                 </div>
+                <div className="flex flex-col w-full gap-2 mb-4">
+  <label htmlFor="monthlySalary" className="font-semibold text-lg">
+    Monthly Salary
+  </label>
+  <input
+    type="number"
+    name="monthlySalary"
+    placeholder="Enter your Monthly Salary"
+    className="p-3 mb-2 border border-[#DBDBDB] rounded-[8px] focus:outline-[#DBDBDB]"
+    value={formData.monthlySalary}
+    onChange={handleChange}
+  />
+</div>
               </div>
             </>
           )}
