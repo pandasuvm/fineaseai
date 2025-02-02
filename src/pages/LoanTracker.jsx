@@ -234,13 +234,16 @@ const LoanTracker = () => {
 </div>
 
 
+<div className="flex justify-end">
   {/* Submit Button */}
   <button
     onClick={addLoan}
-    className="w-full p-3 pt-2 pb-2 mt-6 bg-[#8C7BF3] text-white rounded-lg"
+    className="p-3 pt-2 w-[220px] pb-2 mt-6 bg-[#8C7BF3] text-white rounded-3xl"
   >
-     Add Loan <Plus className="inline ml-1 h-5 w-5" />
+    Add Loan <Plus className="inline ml-1 h-5 w-5" />
   </button>
+</div>
+
 </div>
 
 

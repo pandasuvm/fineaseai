@@ -113,7 +113,7 @@ const App = () => {
             <ProtectedRoute>
               <div className="flex flex-col">
                 <Navbar />
-                <div className="flex bg-black">
+                <div className="flex bg-slate-100">
                   <Sidebar selected={selected} setSelected={setSelected} />
                   <div className="main-content flex-grow bg-black">
                     <Support />
