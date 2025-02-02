@@ -8,11 +8,16 @@ import DatePicker from 'react-datepicker'; // Normal datepicker
 import { confirmAlert } from 'react-confirm-alert'; // Confirmation prompt
 import "react-datepicker/dist/react-datepicker.css"; // Import datepicker styles
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Confirmation prompt styles
-import { db } from '../firebase'; // Adjust the import path based on your file structure
+import { db ,auth} from '../firebase'; // Adjust the import path based on your file structure
 
 // Import Firestore methods
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc,setDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth"; // Firebase Auth import
+import { useNavigate } from 'react-router-dom'; // Redirect to login if user is not authenticated
+
 const LoanTracker = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null); // User state to hold the logged-in user
   const [loanData, setLoanData] = useState([]);
   const [loanDetails, setLoanDetails] = useState({
     name: '',
@@ -25,23 +30,32 @@ const LoanTracker = () => {
   const loansPerPage = 5;
 
   useEffect(() => {
-    fetchLoans();
-  }, []);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (!user) {
+        navigate("/login");
+      } else {
+        fetchLoans(user.uid); // Fetch loans for the logged-in user
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
 
   // Fetch loans from Firestore
-  const fetchLoans = async () => {
+  const fetchLoans = async (userId) => {
     try {
-      const querySnapshot = await getDocs(collection(db, "loans"));
+      const loanQuery = query(collection(db, "loans"), where("userId", "==", userId));
+      const querySnapshot = await getDocs(loanQuery);
       const fetchedLoans = querySnapshot.docs.map(doc => {
         const loan = doc.data();
-        // Convert Firestore timestamps to JavaScript Date objects
         return {
           id: doc.id,
           name: loan.name,
           amount: loan.amount,
           interest: loan.interest,
-          startDate: loan.startDate ? loan.startDate.toDate() : null, // Convert to Date
-          endDate: loan.endDate ? loan.endDate.toDate() : null,       // Convert to Date
+          startDate: loan.startDate ? loan.startDate.toDate() : null,
+          endDate: loan.endDate ? loan.endDate.toDate() : null,
           emi: loan.emi,
           remainingAmount: loan.remainingAmount,
           durationInMonths: loan.durationInMonths,
@@ -54,27 +68,6 @@ const LoanTracker = () => {
       toast.error("Error fetching loans: " + error.message);
     }
   };
-  
-
-  // Function to calculate EMI and remaining amount
-  const calculateLoanDetails = (amount, interest, startDate, endDate) => {
-    const principal = parseFloat(amount);
-    const rate = parseFloat(interest) / 100;
-    
-    if (!principal || !rate || !startDate || !endDate) {
-      return { emi: 0, remainingAmount: 0, durationInMonths: 0 };
-    }
-    
-    // Calculate months between start and end date
-    const durationInMonths = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 30));
-  
-    const emi = (principal * rate) / (1 - Math.pow(1 + rate, -durationInMonths));
-    const totalAmount = emi * durationInMonths;
-    const remainingAmount = totalAmount; // Start with full amount
-    
-    return { emi, remainingAmount, durationInMonths };
-  };
-  
 
   // Add a new loan to Firestore
   const addLoan = async () => {
@@ -84,15 +77,16 @@ const LoanTracker = () => {
       toast.error("All fields must be filled!");
       return;
     }
-  
+
     const { emi, remainingAmount, durationInMonths } = calculateLoanDetails(amount, interest, startDate, endDate);
-  
+
     if (emi === 0 || remainingAmount === 0 || isNaN(emi) || isNaN(remainingAmount)) {
       toast.error("Invalid loan details!");
       return;
     }
-  
+
     const newLoan = {
+      userId: user.uid, // Add the userId here
       name,
       amount: parseFloat(amount),
       interest: parseFloat(interest),
@@ -114,29 +108,24 @@ const LoanTracker = () => {
       toast.error("Error adding loan: " + error.message);
     }
   };
-  
 
-  // Update the EMI paid status
-  const updateEmiPaid = async (index) => {
-    const newLoanData = [...loanData];
-    const loan = newLoanData[index];
-
-    if (loan.remainingAmount > 0 && loan.paidEmis.length < loan.durationInMonths) {
-      loan.paidEmis.push('paid');
-      loan.remainingAmount -= loan.emi;
-      loan.emiPaid += 1;
-
-      try {
-        // Update loan in Firestore
-        await setDoc(doc(db, "loans", loan.id), loan);
-        setLoanData(newLoanData);
-        toast.success(`EMI marked as paid for ${loan.name}`);
-      } catch (error) {
-        toast.error("Error updating EMI: " + error.message);
-      }
-    } else {
-      toast.error("All EMIs already paid for this loan!");
+  // Function to calculate EMI and remaining amount
+  const calculateLoanDetails = (amount, interest, startDate, endDate) => {
+    const principal = parseFloat(amount);
+    const rate = parseFloat(interest) / 100;
+    
+    if (!principal || !rate || !startDate || !endDate) {
+      return { emi: 0, remainingAmount: 0, durationInMonths: 0 };
     }
+    
+    // Calculate months between start and end date
+    const durationInMonths = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 30));
+  
+    const emi = (principal * rate) / (1 - Math.pow(1 + rate, -durationInMonths));
+    const totalAmount = emi * durationInMonths;
+    const remainingAmount = totalAmount; // Start with full amount
+    
+    return { emi, remainingAmount, durationInMonths };
   };
 
   // Delete a loan with confirmation
@@ -176,6 +165,7 @@ const LoanTracker = () => {
   const handlePageChange = (event, value) => {
     setCurrentPage(value - 1);
   };
+
 
   return (
     <div className="min-h-screen w-full p-6 bg-white">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../firebase";
+import { db, auth } from "../firebase"; // Import auth for user data
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { TrendingUp } from "lucide-react";
 
@@ -8,16 +8,29 @@ const OutstandingBalanceCard = () => {
   const [loanData, setLoanData] = useState(null);
   const [progress, setProgress] = useState(0);
   const [progress2, setProgress2] = useState(0);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    fetchLoanData(selectedLoanName);
-  }, [selectedLoanName]);
+    // Get the logged-in user's ID
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      setUserId(currentUser.uid);
+    }
+  }, []);
 
-  // Fetch loan data from Firestore based on the loan name
-  const fetchLoanData = async (loanName) => {
+  useEffect(() => {
+    if (selectedLoanName && userId) {
+      fetchLoanData(selectedLoanName, userId);
+    }
+  }, [selectedLoanName, userId]);
+
+  // Fetch loan data from Firestore based on the loan name and user ID
+  const fetchLoanData = async (loanName, userId) => {
+    if (!loanName || !userId) return; // Ensure both loanName and userId exist before querying
+
     try {
       const loansRef = collection(db, "loans");
-      const q = query(loansRef, where("name", "==", loanName));
+      const q = query(loansRef, where("name", "==", loanName), where("userId", "==", userId));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
@@ -26,15 +39,14 @@ const OutstandingBalanceCard = () => {
         // Ensure paidEmis exists as an array and count its elements
         const emiPaidCount = loan?.paidEmis ? loan.paidEmis.length : 0;
         const duration = loan?.durationInMonths || 1; // Prevent division by zero
-        const calculatedProgress = 100-((duration - emiPaidCount) / duration) * 100;
-        
-setProgress2(((duration - emiPaidCount) / duration) * 100);
+        const calculatedProgress = 100 - ((duration - emiPaidCount) / duration) * 100;
+
+        setProgress2(((duration - emiPaidCount) / duration) * 100);
         setLoanData(loan);
         setProgress(calculatedProgress);
       } else {
         setLoanData(null);
         setProgress(0);
-
         setProgress2(0);
       }
     } catch (error) {
@@ -77,30 +89,32 @@ setProgress2(((duration - emiPaidCount) / duration) * 100);
             <span className="text-3xl text-[#8B8B8B]">.00</span>
           </>
         ) : (
-          <span>N/A</span>
+          <span>0.00</span>
         )}
       </div>
 
       {/* Progress Percentage */}
       <div className="flex items-center text-[#DAFF7C] text-sm mb-4">
         <TrendingUp className="w-4 h-4 mr-2" />
-        <span>
-          {loanData ? `${Math.round(progress2)}% remaining` : "N/A"}
-        </span>
+        <span>{loanData ? `${Math.round(progress2)}% remaining` : "N/A"}</span>
       </div>
 
       {/* Loan Details */}
       <div className="text-[#C1C4C8] text-sm mb-4">
-        <p>Interest Rate: <span className="font-semibold">{loanData?.interest ?? "N/A"}%</span></p>
-        <p>EMI: <span className="font-semibold">${loanData?.emi !== undefined ? loanData.emi.toFixed(2) : "N/A"}</span></p>
-        <p>Duration: <span className="font-semibold">{loanData?.durationInMonths ?? "N/A"} months</span></p>
-        <p>EMIs Paid: <span className="font-semibold">{loanData?.paidEmis ? loanData.paidEmis.length : "N/A"}</span></p>
-        <p>Start Date: <span className="font-semibold">
-          {loanData?.startDate ? loanData.startDate.toDate().toLocaleDateString() : "N/A"}
-        </span></p>
-        <p>End Date: <span className="font-semibold">
-          {loanData?.endDate ? loanData.endDate.toDate().toLocaleDateString() : "N/A"}
-        </span></p>
+        <p>
+          Interest Rate: <span className="font-semibold">{loanData?.interest ?? "N/A"}%</span>
+        </p>
+        <p>
+          EMI:{" "}
+          <span className="font-semibold">
+            ${loanData?.emi !== undefined ? loanData.emi.toFixed(2) : "N/A"}
+          </span>
+        </p>
+
+        <p>
+          EMIs Paid: <span className="font-semibold">{loanData?.paidEmis ? loanData.paidEmis.length : "N/A"}</span>
+        </p>
+
       </div>
 
       {/* Progress Bar */}

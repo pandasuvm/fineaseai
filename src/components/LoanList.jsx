@@ -1,21 +1,38 @@
-// LoanList.jsx
 import { useEffect, useState } from "react";
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase'; // Import Firestore instance
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db, auth } from '../firebase'; // Import Firestore and Auth instance
+import { onAuthStateChanged } from "firebase/auth"; // Import Auth
 
 const LoanList = () => {
   const [loanData, setLoanData] = useState([]);
-
-  // Fetch loan data from Firestore
+  const [user, setUser] = useState(null); // Store the logged-in user
+  
   useEffect(() => {
-    const fetchLoanData = async () => {
-      const loanRef = collection(db, 'loans');
-      const snapshot = await getDocs(loanRef);
-      const loans = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setLoanData(loans);
-    };
-    fetchLoanData();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user); // Update user state
+    });
+
+    return () => unsubscribe(); // Clean up the listener
   }, []);
+  
+  useEffect(() => {
+    if (user) {
+      fetchLoanData(user.uid); // Fetch loans when the user is authenticated
+    }
+  }, [user]);
+
+  // Fetch loan data specific to the logged-in user
+  const fetchLoanData = async (userId) => {
+    try {
+      const loanRef = collection(db, "loans");
+      const q = query(loanRef, where("userId", "==", userId)); // Filter by userId
+      const snapshot = await getDocs(q);
+      const loans = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setLoanData(loans);
+    } catch (error) {
+      console.error("Error fetching loan data:", error);
+    }
+  };
 
   // Function to calculate the upcoming EMI date
   const calculateNextEmiDate = (startDate, emiPaid, durationInMonths) => {
@@ -38,7 +55,7 @@ const LoanList = () => {
 
           <div className="flex-1">
             <div className="flex justify-between font-normal text-[#AEAEAE]">
-              <span className="mb-1">{loan.name} Loan</span>
+              <span className="mb-1">{loan.name}</span>
               <span className="text-[#e2e2e2] font-wide text-sm font-normal">${loan.amount}</span>
             </div>
 
