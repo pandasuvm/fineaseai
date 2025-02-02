@@ -15,8 +15,8 @@
     "@google-cloud/translate": "^8.5.0",
     "@mui/lab": "^6.0.0-beta.25",
     "@mui/material": "^6.4.2",
-    "@mui/x-date-pickers": "^7.25.0",
     "@mui/x-charts": "^7.25.0",
+    "@mui/x-date-pickers": "^7.25.0",
     "@tailwindcss/vite": "^4.0.0",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",
@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@gradio/client": "^1.10.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",

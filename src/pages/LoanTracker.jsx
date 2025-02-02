@@ -9,6 +9,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Confirmation prompt
 import "react-datepicker/dist/react-datepicker.css"; // Import datepicker styles
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Confirmation prompt styles
 import { db ,auth} from '../firebase'; // Adjust the import path based on your file structure
+import { Plus } from 'lucide-react';
 
 // Import Firestore methods
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc,setDoc } from "firebase/firestore";
@@ -168,120 +169,129 @@ const LoanTracker = () => {
 
 
   return (
-    <div className="min-h-screen w-full p-6 bg-white">
+    <div className="min-h-screen w-full p-6 bg-black font-wide">
       <ToastContainer position="top-right" autoClose={5000} />
-      <h1 className="text-4xl font-bold text-center text-gray-900 mb-6">Loan Tracker</h1>
+      <h1 className="text-2xl font-semibold text-gray-300 font-wide mb-4 text-center">Loan Tracker</h1>
 
       {/* Loan Form (Top Section) */}
-      <div className="max-w-3xl mx-auto bg-gray-100 p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Add New Loan</h2>
-        <div className="grid grid-cols-2 gap-4">
-        <select
-  name="name"
-  value={loanDetails.name}
-  onChange={(e) => setLoanDetails({ ...loanDetails, name: e.target.value })}
-  className="w-full p-3 bg-gray-200 text-gray-800 rounded-lg"
->
-  <option value="" disabled>Select Loan Type</option>
-  <option value="Home Loan">Home Loan</option>
-  <option value="Vehicle Loan">Vehicle Loan</option>
-  <option value="Car Loan">Car Loan</option>
-  <option value="Marriage Loan">Marriage Loan</option>
-  <option value="Personal Loan">Personal Loan</option>
-</select>
+      <div className="bg-white/10 border border-[#5b5b5b] backdrop-blur-lg shadow-lg rounded-lg p-6 max-w-3xl m-auto">
+  <h2 className="text-2xl font-semibold text-gray-300 mb-4">Add New Loan</h2>
 
-          <input
-            type="number"
-            name="amount"
-            placeholder="Loan Amount"
-            value={loanDetails.amount}
-            onChange={(e) => setLoanDetails({ ...loanDetails, amount: e.target.value })}
-            className="w-full p-3 bg-gray-200 text-gray-800 rounded-lg"
-          />
-          <input
-            type="number"
-            name="interest"
-            placeholder="Interest Rate (%)"
-            value={loanDetails.interest}
-            onChange={(e) => setLoanDetails({ ...loanDetails, interest: e.target.value })}
-            className="w-full p-3 bg-gray-200 text-gray-800 rounded-lg"
-          />
-        </div>
+  {/* First Row: Loan Amount and Interest Rate */}
+  <div className="grid grid-cols-2 gap-4 mb-6">
+    <input
+      type="number"
+      name="amount"
+      placeholder="Loan Amount"
+      value={loanDetails.amount}
+      onChange={(e) => setLoanDetails({ ...loanDetails, amount: e.target.value })}
+      className="p-3 border-2 border-[#5b5b5b] focus:border-2 focus:border-[#8c8c8c] rounded-lg focus:outline-none focus:ring-2 font-wide bg-[#212121] backdrop-blur-lg text-white"
+    />
+    <input
+      type="number"
+      name="interest"
+      placeholder="Interest Rate (%)"
+      value={loanDetails.interest}
+      onChange={(e) => setLoanDetails({ ...loanDetails, interest: e.target.value })}
+      className="p-3 border-2 border-[#5b5b5b] focus:border-2 focus:border-[#8c8c8c] rounded-lg focus:outline-none focus:ring-2 font-wide bg-[#212121] backdrop-blur-lg text-white"
+    />
+  </div>
 
-        <div className="mt-4">
-          <label className="text-gray-800">Start Date</label>
-          <DatePicker
-            selected={loanDetails.startDate}
-            onChange={(date) => setLoanDetails({ ...loanDetails, startDate: date })}
-            dateFormat="MM/dd/yyyy"
-            className="w-full p-3 mt-2 bg-gray-200 text-gray-800 rounded-lg"
-          />
-        </div>
+  {/* Second Row: Start Date and End Date */}
+  <div className="grid grid-cols-2 gap-4 mb-6">
+    <div>
+      <label className="text-gray-300 block mb-2">Start Date</label>
+      <DatePicker
+        selected={loanDetails.startDate}
+        onChange={(date) => setLoanDetails({ ...loanDetails, startDate: date })}
+        dateFormat="MM/dd/yyyy"
+        className="w-[170%] p-3 border-2 border-[#5b5b5b] focus:border-2 focus:border-[#8c8c8c] rounded-lg focus:outline-none focus:ring-2 font-wide bg-[#212121] backdrop-blur-lg text-white"
+      />
+    </div>
+    <div>
+      <label className="text-gray-300 block mb-2">End Date</label>
+      <DatePicker
+        selected={loanDetails.endDate}
+        onChange={(date) => setLoanDetails({ ...loanDetails, endDate: date })}
+        dateFormat="MM/dd/yyyy"
+        className="w-[170%] p-3 border-2 border-[#5b5b5b] focus:border-2 focus:border-[#8c8c8c] rounded-lg focus:outline-none focus:ring-2 font-wide bg-[#212121] backdrop-blur-lg text-white"
+      />
+    </div>
+  </div>
 
-        <div className="mt-4">
-          <label className="text-gray-800">End Date</label>
-          <DatePicker
-            selected={loanDetails.endDate}
-            onChange={(date) => setLoanDetails({ ...loanDetails, endDate: date })}
-            dateFormat="MM/dd/yyyy"
-            className="w-full p-3 mt-2 bg-gray-200 text-gray-800 rounded-lg"
-          />
-        </div>
+  {/* Loan Type Selection - Tags */}
+  <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mb-4">
+  {["Home", "Vehicle", "Car", "Marriage", "Personal"].map((loanType) => (
+    <button
+      key={loanType}
+      onClick={() => setLoanDetails({ ...loanDetails, name: loanType })}
+      className={`w-full p-2 pr-1 pl-1 text-[#b6b6b6] rounded-full border-2 border-[#5b5b5b] transition-all duration-300 
+        ${loanDetails.name === loanType ? 'bg-[#C4FC82] text-black font-semibold border-[#C4FC82]' : 'bg-transparent border-[#5b5b5b] hover:bg-[#5b5b5b49]'}`}
+    >
+      {loanType}
+    </button>
+  ))}
+</div>
 
-        <button
-          onClick={addLoan}
-          className="w-full p-3 mt-6 bg-purple-600 text-white rounded-lg"
-        >
-          <FaPlusCircle className="inline mr-2" /> Add Loan
-        </button>
-      </div>
+
+  {/* Submit Button */}
+  <button
+    onClick={addLoan}
+    className="w-full p-3 pt-2 pb-2 mt-6 bg-[#8C7BF3] text-white rounded-lg"
+  >
+     Add Loan <Plus className="inline ml-1 h-5 w-5" />
+  </button>
+</div>
+
+
+
 
       {/* Loans List (Below Form) */}
       <div className="mt-12 max-w-5xl mx-auto">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Your Loans</h2>
-        <div className="overflow-x-auto bg-gray-100 rounded-lg shadow-lg">
-          <table className="w-full table-auto text-gray-800">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="p-4 text-left">Loan Name</th>
-                <th className="p-4 text-left">Amount</th>
-                <th className="p-4 text-left">Interest Rate</th>
-                <th className="p-4 text-left">Start Date</th>
-                <th className="p-4 text-left">End Date</th>
-                <th className="p-4 text-left">EMI Amount</th>
-                <th className="p-4 text-left">Remaining Amount</th>
-                <th className="p-4 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-  {currentLoans.map((loan, index) => (
-    <tr key={index} className="bg-gray-50 hover:bg-gray-200">
-      <td className="p-4">{loan.name}</td>
-      <td className="p-4">${loan.amount}</td>
-      <td className="p-4">{loan.interest}%</td>
-      <td className="p-4">{new Date(loan.startDate).toLocaleDateString()}</td>
-      <td className="p-4">{new Date(loan.endDate).toLocaleDateString()}</td>
-      <td className="p-4">${loan.emi ? loan.emi.toFixed(2) : 'N/A'}</td>
-      <td className="p-4">${loan.remainingAmount ? loan.remainingAmount.toFixed(2) : 'N/A'}</td>
-      <td className="p-4">
-        <button
-          onClick={() => updateEmiPaid(index)}
-          className="bg-green-500 text-white p-2 rounded-full hover:bg-green-400"
-        >
-          + EMI Paid
-        </button>
-        <button
-          onClick={() => deleteLoan(index)}
-          className="bg-red-500 text-white p-2 rounded-full hover:bg-red-400 ml-2"
-        >
-          <FaTrashAlt />
-        </button>
-      </td>
+        <h2 className="text-2xl font-semibold text-gray-300 mb-6">Your Loans</h2>
+        <div className="overflow-x-auto bg-[#2E3131] shadow-lg">
+        <table className="min-w-full table-auto bg-white/10 backdrop-blur-lg shadow-2xl border border-gray-600 font-wide">
+  <thead>
+    <tr className="bg-white/10 backdrop-blur-lg font-bold bg-opacity-50 border border-gray-400 text-gray-2000 text-sm">
+      <th className="py-3 px-6 text-left text-md font-medium text-gray-300">Loan Name</th>
+      <th className="py-3 px-6 text-left text-md font-medium text-gray-300">Amount</th>
+      <th className="py-3 px-6 text-left text-md font-medium text-gray-300">Interest Rate</th>
+      <th className="py-3 px-6 text-left text-md font-medium text-gray-300">Start Date</th>
+      <th className="py-3 px-6 text-left text-md font-medium text-gray-300">End Date</th>
+      <th className="py-3 px-6 text-left text-md font-medium text-gray-300">EMI Amount</th>
+      <th className="py-3 px-6 text-left text-md font-medium text-gray-300">Remaining Amount</th>
+      <th className="py-3 px-6 text-left text-md font-medium text-gray-300 w-[200px]">Actions</th> {/* Increased width here */}
     </tr>
-  ))}
-</tbody>
+  </thead>
+  <tbody>
+    {currentLoans.map((loan, index) => (
+      <tr key={index} className="bg-[#191A1A] text-white text-sm border-b border-gray-500 backdrop-blur-lg hover:bg-gray-900 hover:bg-opacity-90 transition-all">
+        <td className="pr-2 pl-2 pt-3 pb-3">{loan.name}</td>
+        <td className="p-4 pr-0">${loan.amount}</td>
+        <td className="p-4 pr-0">{loan.interest}%</td>
+        <td className="p-4 pr-0">{new Date(loan.startDate).toLocaleDateString()}</td>
+        <td className="p-4 pr-0">{new Date(loan.endDate).toLocaleDateString()}</td>
+        <td className="p-4 pr-0">${loan.emi ? loan.emi.toFixed(2) : 'N/A'}</td>
+        <td className="p-4 pr-0">${loan.remainingAmount ? loan.remainingAmount.toFixed(2) : 'N/A'}</td>
+        <td className="p-4">
+          <button
+            onClick={() => updateEmiPaid(index)}
+            className="bg-[#C4FC82] text-black p-2 pr-3 pl-3 text-xs font-semibold rounded-full hover:bg-[#9ad05b] cursor-pointer"
+          >
+            + EMI Paid
+          </button>
+          <button
+            onClick={() => deleteLoan(index)}
+            className="bg-[#8C7BF3] text-white p-3 cursor-pointer text-sm rounded-full hover:bg-red-400 ml-2"
+          >
+            <FaTrashAlt />
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
-          </table>
         </div>
 
         {/* Pagination Controls */}

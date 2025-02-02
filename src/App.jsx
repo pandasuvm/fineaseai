@@ -65,9 +65,9 @@ const App = () => {
             <ProtectedRoute>
               <div className="flex flex-col">
                 <Navbar />
-                <div className="flex">
+                <div className="flex bg-black">
                   <Sidebar selected={selected} setSelected={setSelected} />
-                  <div className="main-content flex-grow p-4">
+                  <div className="main-content flex-grow bg-black">
                     <LoanTracker />
                   </div>
                 </div>
@@ -81,9 +81,9 @@ const App = () => {
             <ProtectedRoute>
               <div className="flex flex-col">
                 <Navbar />
-                <div className="flex">
+                <div className="flex bg-black">
                   <Sidebar selected={selected} setSelected={setSelected} />
-                  <div className="main-content flex-grow p-4">
+                  <div className="main-content flex-grow bg-black">
                     <AiLoan />
                   </div>
                 </div>
@@ -97,9 +97,9 @@ const App = () => {
             <ProtectedRoute>
               <div className="flex flex-col">
                 <Navbar />
-                <div className="flex">
+                <div className="flex bg-black">
                   <Sidebar selected={selected} setSelected={setSelected} />
-                  <div className="main-content flex-grow p-4">
+                  <div className="main-content flex-grow bg-black">
                     <Expenses />
                   </div>
                 </div>
@@ -113,9 +113,9 @@ const App = () => {
             <ProtectedRoute>
               <div className="flex flex-col">
                 <Navbar />
-                <div className="flex">
+                <div className="flex bg-black">
                   <Sidebar selected={selected} setSelected={setSelected} />
-                  <div className="main-content flex-grow p-4">
+                  <div className="main-content flex-grow bg-black">
                     <Support />
                   </div>
                 </div>
