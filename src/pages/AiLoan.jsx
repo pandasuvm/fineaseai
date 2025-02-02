@@ -64,45 +64,6 @@ const AiLoan = () => {
     }
   };
 
-  const handleGenerateText = async () => {
-    if (!prompt.trim()) return;
-  
-    setIsGenerating(true);
-    try {
-      // Constructing the request body with the prompt
-      const requestBody = {
-        data: [prompt], // Wrap the prompt in an array if required by your API
-      };
-  
-      const response = await fetch("https://52319001eba86f2ee5.gradio.live", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",  // Make sure the content type is set to JSON
-        },
-        body: JSON.stringify(requestBody), // Sending the body as a JSON string
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-  
-      const result = await response.json();
-  
-      if (result?.data && result.data[0]) {
-        setGeneratedText(result.data[0]);
-      } else {
-        throw new Error("Unexpected response structure");
-      }
-    } catch (error) {
-      console.error("Error generating text:", error);
-      setGeneratedText("Sorry, there was an error generating the text.");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-  
-  
-
   return (
     <div>
       <h2>Loan Application</h2>
@@ -249,26 +210,6 @@ const AiLoan = () => {
           <p>{response}</p>
         </div>
       )}
-
-      {/* Second Section: Generate Custom Text */}
-      <div className="w-full max-w-xl mt-10 p-6 bg-white shadow-lg rounded-lg">
-        <div className="text-center">
-          <h3 className="text-2xl font-semibold mb-4">Generate Custom Text</h3>
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Enter your prompt here..."
-            className="w-full h-32 p-4 border border-gray-300 rounded-lg text-lg mb-4"
-          />
-          <button
-            onClick={handleGenerateText}
-            disabled={isGenerating}
-            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg disabled:opacity-50"
-          >
-            {isGenerating ? "Generating..." : "Generate Text"}
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
