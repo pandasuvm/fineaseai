@@ -38,7 +38,7 @@ const AiLoan = () => {
 
     setLoading(true);
     try {
-      const client = await Client.connect("https://edc0d3f231d6a13c86.gradio.live/");
+      const client = await Client.connect("https://29508ec472064087f8.gradio.live/");
       const result = await client.predict("/predict", { loan_details: loanDetails });
 
       setResponse(result.data);
